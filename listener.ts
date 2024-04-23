@@ -59,6 +59,7 @@ export async function processRaydiumPool(updatedAccountInfo: KeyedAccountInfo) {
 
         const decodedData = LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data);
         accountData = decodedData as LiquidityStateV4;
+        console.log('Account Data:', accountData);
 
         if (CHECK_IF_MINT_IS_RENOUNCED) {
             const mintOption = await checkMintable(accountData.baseMint);
@@ -70,12 +71,18 @@ export async function processRaydiumPool(updatedAccountInfo: KeyedAccountInfo) {
           }
 
         const startTime = moment.utc(accountData.poolOpenTime.toNumber() * 1000).utcOffset('+0100');
+        console.log('Trading Starts:', startTime);
         const elapsedTime = startTime.fromNow();
+
+        const TradeStatus = accountData.status.toNumber();
+        console.log('Trade Status:', TradeStatus);
 
         console.log('Trading Starts:', elapsedTime);
         const lpMintAddress = updatedAccountInfo.accountId;
-
         console.log('Liquidity Pool Pair:', lpMintAddress.toString());
+
+        logger.info(`Market ID: ${accountData.marketId.toString()}`);
+        logger.info(`LP Mint Address: ${lpMintAddress.toString()}`);
 
         if (startNewCycle) {
             tokensBoughtCount = 0;
